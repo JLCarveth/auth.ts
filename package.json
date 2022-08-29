@@ -1,0 +1,16 @@
+{
+  "type": "module",
+  "dependencies": {
+    "jsonwebtoken": "^8.5.1"
+  },
+  "name": "auth.js",
+  "version": "1.0.0",
+  "description": "A Jsonwebtoken and node:crypto wrapper",
+  "main": "auth.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "John L. Carveth <jlcarveth@gmail.com>",
+  "license": "MIT"
+}
