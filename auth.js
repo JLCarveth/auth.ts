@@ -14,7 +14,7 @@ try {
     exit(1);
 }
 
-let secretKey = process.env.secretKey || "GENERATE A SECRET KEY"
+let secretKey = process.env.SECRET_KEY || "GENERATE A SECRET KEY"
 
 /**
  * Generates a login-token
