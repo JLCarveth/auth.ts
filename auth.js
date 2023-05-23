@@ -114,8 +114,7 @@ function middleware(request, response, next) {
         .send({ success: false, error: "Token could not be verified" });
     }
   } else {
-    // TODO Set HTTP status code
-    response.send({
+    response.status(400).send({
       success: false,
       error:
         "No token provided. Get a token and provide it with the x-access-token header.",
