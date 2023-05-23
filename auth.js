@@ -5,47 +5,52 @@
  */
 
 let crypto;
-import jsonwebtoken from 'jsonwebtoken'
+import jsonwebtoken from "jsonwebtoken";
 
 try {
-    crypto = await import('node:crypto');
+  crypto = await import("node:crypto");
 } catch (error) {
-    console.error("auth.js requires the node:crypto module to run.");
-    exit(1);
+  console.error("auth.js requires the node:crypto module to run.");
+  exit(1);
 }
 
-let secretKey = process.env.SECRET_KEY || "GENERATE A SECRET KEY"
+let secretKey = process.env.SECRET_KEY;
+if (!secretKey) {
+  throw new Error("SECRET_KEY environment variable not provided.");
+}
 
 /**
  * Generates a login-token
  * @param {String} email Unique email address to identify user
  * @param {*} role Optional role specification for RBAC
- * @returns 
+ * @returns
  */
 function generateToken(payload) {
-    return new Promise((resolve, reject) => {
-        if (secretKey === "GENERATE A SECRET KEY") {
-            console.warn("WARNING: You have not generated a secret key. Set the `secretKey` env var.");
-        }
-        jsonwebtoken.sign(payload, secretKey, { 'expiresIn': '1h' }, (err, token) => {
-            if (err) reject(err)
-            else resolve(token)
-        })
+  return new Promise((resolve, reject) => {
+    if (secretKey === "GENERATE A SECRET KEY") {
+      console.warn(
+        "WARNING: You have not generated a secret key. Set the `secretKey` env var."
+      );
+    }
+    jsonwebtoken.sign(payload, secretKey, { expiresIn: "1h" }, (err, token) => {
+      if (err) reject(err);
+      else resolve(token);
     });
+  });
 }
 
 /**
  * Ensures the token signature is valid, as well as expiry if applicable
  * @param {String} token token to be verified
  * @throws Error if signature or expiry invalid
- * @returns 
+ * @returns
  */
 function verifyToken(token) {
-    try {
-        return jsonwebtoken.verify(token, secretKey)
-    } catch (e) {
-        throw e
-    }
+  try {
+    return jsonwebtoken.verify(token, secretKey);
+  } catch (e) {
+    throw e;
+  }
 }
 
 /**
@@ -53,7 +58,7 @@ function verifyToken(token) {
  * @returns a 32-character randomly generated string
  */
 function generateSalt() {
-    return crypto.randomBytes(16).toString('hex');
+  return crypto.randomBytes(16).toString("hex");
 }
 
 /**
@@ -65,8 +70,8 @@ function generateSalt() {
  * @returns hashed password + salt
  */
 function hashPassword(password) {
-    const salt = generateSalt();
-    return hashWithSalt(password, salt);
+  const salt = generateSalt();
+  return hashWithSalt(password, salt);
 }
 
 /**
@@ -76,48 +81,54 @@ function hashPassword(password) {
  * @returns hashed password + salt
  */
 function hashWithSalt(password, salt) {
-    const hash = crypto.createHmac('sha512', salt).update(password).digest('hex');
+  const hash = crypto.createHmac("sha512", salt).update(password).digest("hex");
 
-    return `${hash}:${salt}`;
+  return `${hash}:${salt}`;
 }
 
 /**
  * Compares a plaintext password with a hash.
- * @param {String} password 
- * @param {String} hash 
+ * @param {String} password
+ * @param {String} hash
  * @returns true if password matches hash
  */
 function comparePassword(password, hash) {
-    let salt = hash.split(':')[1];
-    return hashWithSalt(password, salt) === hash;
+  let salt = hash.split(":")[1];
+  return hashWithSalt(password, salt) === hash;
 }
 
 function middleware(request, response, next) {
-    // cookie-parser is required to populate req.cookies
-    const token = request.headers['x-access-token'] || request.cookies.token
+  // cookie-parser is required to populate req.cookies
+  const token = request.headers["x-access-token"] || request.cookies.token;
 
-    if (token) {
-        try {
-            let result = verifyToken(token);
-            response.locals.email = result.email;
-            response.locals.role = result.role;
-            next();
-        } catch (err) {
-            // TODO Set HTTP status code
-            response.send({success:false, error: err})
-        }
-    } else {
-        // TODO Set HTTP status code
-        response.send({ success: false, error: "No token provided. Get a token and provide it with the x-access-token header." });
+  if (token) {
+    try {
+      let result = verifyToken(token);
+      response.locals.email = result.email;
+      response.locals.role = result.role;
+      next();
+    } catch (err) {
+      // Invalid token - Client Error
+      response
+        .status(401)
+        .send({ success: false, error: "Token could not be verified" });
     }
+  } else {
+    // TODO Set HTTP status code
+    response.send({
+      success: false,
+      error:
+        "No token provided. Get a token and provide it with the x-access-token header.",
+    });
+  }
 }
 
 export {
-    generateToken,
-    verifyToken,
-    generateSalt,
-    hashPassword,
-    hashWithSalt,
-    comparePassword,
-    middleware
-}
+  generateToken,
+  verifyToken,
+  generateSalt,
+  hashPassword,
+  hashWithSalt,
+  comparePassword,
+  middleware,
+};
