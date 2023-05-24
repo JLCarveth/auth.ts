@@ -1,9 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 
-export function generateToken(payload: {
-  email: string;
-  role?: string;
-}): Promise<string>;
+export function generateToken(payload: Object): Promise<string>;
 
 export function verifyToken(token: string): { email: string; role?: string };
 

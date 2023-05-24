@@ -4,7 +4,7 @@
     "jsonwebtoken": "^8.5.1"
   },
   "name": "@jlcarveth/auth.js",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "A Jsonwebtoken and node:crypto wrapper",
   "main": "auth.js",
   "devDependencies": {},
