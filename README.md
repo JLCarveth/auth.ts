@@ -1,4 +1,5 @@
 # auth.js
+![npm](https://img.shields.io/npm/dt/@jlcarveth/auth.js) ![npm (scoped)](https://img.shields.io/npm/v/@jlcarveth/auth.js)
 
 `auth.js` is a Node.js module that provides several functions for handling authentication and security in a Node.js application. It uses the `jsonwebtoken` library to generate and verify JSON Web Tokens (JWTs) and the Node.js `crypto` library to generate salts and hash passwords.
 
