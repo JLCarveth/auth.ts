@@ -6,6 +6,7 @@
 
 let crypto;
 import jsonwebtoken from "jsonwebtoken";
+import { merge } from "deeper-merge";
 
 try {
   crypto = await import("node:crypto");
@@ -103,9 +104,9 @@ function middleware(request, response, next) {
 
   if (token) {
     try {
-      let result = verifyToken(token);
-      response.locals.email = result.email;
-      response.locals.role = result.role;
+      const payload = verifyToken(token);
+      const locals = merge(res.locals, payload);
+      res.locals = locals;
       next();
     } catch (err) {
       // Invalid token - Client Error
