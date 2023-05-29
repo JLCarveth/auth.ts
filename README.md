@@ -11,7 +11,7 @@ npm i @jlcarveth/auth.js
 ```
 
 ## Usage
-
+ `auth.js` requires a `SECRET_KEY` environment variable to be defined. You can generate one with the following command: `openssl rand -base64 32`
 To use the functions provided by `auth.js`, you need to import them into your code. Here's an example of how you might use the `generateToken` function to create a new JWT:
 
 ```javascript
