@@ -28,8 +28,8 @@ if (!secretKey) {
 function generateToken(payload) {
   return new Promise((resolve, reject) => {
     if (secretKey === "GENERATE A SECRET KEY") {
-      console.warn(
-        "WARNING: You have not generated a secret key. Set the `secretKey` env var."
+      throw new Error(
+        "You have not generated a secret key. Set the `secretKey` env var."
       );
     }
     jsonwebtoken.sign(payload, secretKey, { expiresIn: "1h" }, (err, token) => {
